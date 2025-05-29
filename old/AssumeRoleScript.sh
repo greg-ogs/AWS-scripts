@@ -35,13 +35,13 @@ SECRET_ACCESS_KEY=$(echo "$JSON_OUTPUT" | jq -r '.Credentials.SecretAccessKey')
 SESSION_TOKEN=$(echo "$JSON_OUTPUT" | jq -r '.Credentials.SessionToken')
 
 # Save the extracted credentials to the output file
-cat <<EOL > "$OUTPUT_FILE"
-\$env:AWS_ACCESS_KEY_ID="${ACCESS_KEY_ID}"
-\$env:AWS_SECRET_ACCESS_KEY="${SECRET_ACCESS_KEY}"
-\$env:AWS_SESSION_TOKEN="${SESSION_TOKEN}"
-\$env:AWS_REGION="us-west-1"
+cat <<EOL > "log.sh"
+\export AWS_ACCESS_KEY_ID="${ACCESS_KEY_ID}"
+\export AWS_SECRET_ACCESS_KEY="${SECRET_ACCESS_KEY}"
+\export AWS_SESSION_TOKEN="${SESSION_TOKEN}"
+\export AWS_REGION="us-west-1"
 EOL
 
-chmod 600 "$OUTPUT_FILE"
+chmod 600 "log.sh"
 
 echo "Credentials have been saved to $OUTPUT_FILE"
