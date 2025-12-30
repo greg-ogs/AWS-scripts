@@ -11,10 +11,8 @@ INSTANCE_NAME="${instance}"
 S3_POLICY_NAME="${deny_s3_policy}"
 EC2_POLICY_NAME="${deny_ec2_policy}"
 
-# --- Preparation ---
 # Fetch the Public IP of the EC2 instance to use in the condition.
-# We append /32 to format it as a valid CIDR for the IAM policy.
-# Get the Instance ID from the provided Name tag
+# Get the Instance ID from the provided Name
 
 INSTANCE_ID=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=$INSTANCE_NAME" \
@@ -30,9 +28,7 @@ PUBLIC_IP=$(aws ec2 describe-instances \
 
 echo "Detected Instance Public IP: $PUBLIC_IP"
 
-# --- Execution (The Two Moves) ---
-
-# Move 1: Create the S3 Deny Policy (Inline)
+# Create the S3 Deny Policy (Inline)
 # Denies Get and List actions if the request comes from the instance's Public IP.
 echo "Creating inline policy: $S3_POLICY_NAME..."
 aws iam put-role-policy \
@@ -57,10 +53,8 @@ aws iam put-role-policy \
         ]
     }'
 
-# Move 2: Create the EC2 Deny Policy (Inline)
 # Denies Describe actions if the request targets the eu-west-1 region.
-# Note: "Originates from" in IAM region restrictions typically maps to
-# 'aws:RequestedRegion' to prevent actions within that specific region.
+
 echo "Creating inline policy: $EC2_POLICY_NAME..."
 aws iam put-role-policy \
     --role-name "$ROLE_NAME" \
